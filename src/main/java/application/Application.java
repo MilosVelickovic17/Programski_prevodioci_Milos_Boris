@@ -23,7 +23,8 @@ public class Application {
 
         try {
             String code = Files.readString(Path.of(args[0]));
-            Lexer lexer = new Lexer(code);
+            String[] lines = code.split("\n");
+            Lexer lexer = new Lexer(lines);
             List<Token> tokens = lexer.scanTokens();
 
             System.out.println(TokenFormatter.formatList(tokens));

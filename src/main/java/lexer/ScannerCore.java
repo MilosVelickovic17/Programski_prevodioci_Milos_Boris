@@ -1,43 +1,75 @@
 package lexer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class ScannerCore {
-    private final String src;
-    private int cur = 0;
-    private int line = 1;
-    private int col = 1;
+    private final String[] src;
+    private List<Integer> komentari = new ArrayList<>();
+    private int line = 0;
+    private int col = 0;
 
-    private int startIdx = 0;
-    private int startLine = 1;
-    private int startCol = 1;
+    private int startLine = 0;
+    private int startCol = 0;
 
-    public ScannerCore(String src) { this.src = src; }
+    public ScannerCore(String[] src) {
+        this.src = src;
+        //comments(src);
+    }
 
-    public boolean isAtEnd() { return cur >= src.length(); }
-    public char peek() { return isAtEnd() ? '\0' : src.charAt(cur); }
-    public char peekNext() { return (cur + 1 >= src.length()) ? '\0' : src.charAt(cur + 1); }
+    public void comments(String[] lines){
+        for (int i = 0; i < src.length; i++) {
+            if(src[i].charAt(0) != '|' && src[i].charAt(src[i].length() - 1) != '|'){
+                komentari.add(i);
+            }
+        }
+    }
+
+
+    public boolean isAtEnd() {
+        return line >= src.length || (line == src.length - 1 && col >= src[line].length());
+    }
+
+    public char peek() {
+        if (isAtEnd()) return '\0';
+        if (col >= src[line].length()) return '\n'; // prelazak na novu liniju
+        return src[line].charAt(col);
+    }
+
+    public char peekNext() {
+        if (isAtEnd()) return '\0';
+        if (col + 1 < src[line].length()) return src[line].charAt(col + 1);
+        else if (line + 1 < src.length) return '\n'; // sledeća linija
+        else return '\0';
+    }
 
     public char advance() {
-        char c = src.charAt(cur++);
-        if (c == '\n') { line++; col = 1; } else { col++; }
+        if (isAtEnd()) return '\0';
+        char c;
+        if (col >= src[line].length()) {
+            // prelazak u novu liniju
+            c = '\n';
+            line++;
+            col = 0;
+        }
+        else if(komentari.contains(line)){
+            line++;
+            col = 0;
+            c = ' ';
+        }
+        else {
+            c = src[line].charAt(col++);
+        }
         return c;
     }
 
-    public boolean match(char expected) {
-        if (isAtEnd() || src.charAt(cur) != expected) return false;
-        cur++; col++;
-        return true;
-    }
-
     public void beginToken() {
-        startIdx = cur;
         startLine = line;
         startCol = col;
     }
 
-    public int getCur() { return cur; }
-    public int getLine() { return line; }
-    public int getCol() { return col; }
-    public int getStartIdx() { return startIdx; }
-    public int getStartLine() { return startLine; }
-    public int getStartCol() { return startCol; }
+    public int getLine() { return line + 1; }
+    public int getCol() { return col + 1; }
+    public int getStartLine() { return startLine + 1; }
+    public int getStartCol() { return startCol + 1; }
 }

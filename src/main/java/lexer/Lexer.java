@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Lexer {
     private final ScannerCore sc;
-    private final String source;
+    private final String[] source;  // 🔹 Niz linija
     private final List<Token> tokens = new ArrayList<>();
 
     private static final Map<String, TokenType> KEYWORDS = Map.ofEntries(
@@ -51,7 +51,7 @@ public class Lexer {
             Map.entry("LeBwan", TokenType.DO)
     );
 
-    public Lexer(String source) {
+    public Lexer(String[] source) {
         this.source = source;
         this.sc = new ScannerCore(source);
     }
@@ -69,30 +69,32 @@ public class Lexer {
         char c = sc.advance();
 
         switch (c) {
-            case '(' -> add(TokenType.LPAREN);
-            case ')' -> add(TokenType.RPAREN);
-            case '[' -> add(TokenType.LBRACKET);
-            case ']' -> add(TokenType.RBRACKET);
-            case '{' -> add(TokenType.LUGLASTA);
-            case '}' -> add(TokenType.RUGLASTA);
-            case ',' -> add(TokenType.SEPARATOR_COMMA);
-            case ':' -> add(TokenType.TYPE_COLON);
-            case '%' -> add(TokenType.PERCENT);
-            case '\n' -> tokens.add(new Token(
-                    TokenType.NEWLINE, "\n", null, sc.getStartLine(), sc.getStartCol(), sc.getStartCol()
-            ));
-            case ' ', '\r', '\t' -> {}
+            case '(' -> add(TokenType.LPAREN, "(");
+            case ')' -> add(TokenType.RPAREN, ")");
+            case '[' -> add(TokenType.LBRACKET, "[");
+            case ']' -> add(TokenType.RBRACKET, "]");
+            case '{' -> add(TokenType.LUGLASTA, "{");
+            case '}' -> add(TokenType.RUGLASTA, "}");
+            case ',' -> add(TokenType.SEPARATOR_COMMA, ",");
+            case ':' -> add(TokenType.TYPE_COLON, ":");
+            case '%' -> add(TokenType.PERCENT, "%");
+            case '\n' -> tokens.add(new Token(TokenType.NEWLINE, "\n", null,
+                    sc.getStartLine(), sc.getStartCol(), sc.getStartCol()));
+            case ' ', '\r', '\t', '|' -> {}
             default -> {
-                if (Character.isDigit(c)) number();
-                else if (isIdentStart(c)) identifier();
+                if (Character.isDigit(c)) number(c);
+                else if (isIdentStart(c)) identifier(c);
                 else throw error("Unexpected character");
             }
         }
     }
 
-    private void number() {
-        while (Character.isDigit(sc.peek())) sc.advance();
-        String text = source.substring(sc.getStartIdx(), sc.getCur());
+    private void number(char first) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(first);
+        while (Character.isDigit(sc.peek())) sb.append(sc.advance());
+
+        String text = sb.toString();
         char nextChar = sc.peek();
         if (Character.isAlphabetic(nextChar)) {
             throw error("Error: Character in int literal");
@@ -100,32 +102,34 @@ public class Lexer {
         addLiteralInt(text);
     }
 
-    private void identifier() {
-        while (isIdentPart(sc.peek())) sc.advance();
-        String text = source.substring(sc.getStartIdx(), sc.getCur());
+    private void identifier(char first) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(first);
+        while (isIdentPart(sc.peek())) sb.append(sc.advance());
+
+        String text = sb.toString();
         TokenType type;
-        if(text.startsWith("Le")){
+        if (text.startsWith("Le")) {
             type = KEYWORDS.getOrDefault(text, TokenType.IDENT);
-        }else{
+        } else {
             type = KEYWORDS.getOrDefault(text, TokenType.GRESKA);
-            if(type.equals(TokenType.GRESKA)){
-                throw error("Identifyer name incorrect");
+            if (type.equals(TokenType.GRESKA)) {
+                throw error("Identifier name incorrect");
             }
         }
         add(type, text);
     }
 
-    private boolean isIdentStart(char c) { return Character.isLetter(c) || c == '_' || c == '-';}
-    private boolean isIdentPart(char c)  { return isIdentStart(c) || Character.isDigit(c); }
-
-    private void add(TokenType type) {
-        String lex = source.substring(sc.getStartIdx(), sc.getCur());
-        tokens.add(new Token(type, lex, null,
-                sc.getStartLine(), sc.getStartCol(), sc.getCol() - 1));
+    private boolean isIdentStart(char c) {
+        return Character.isLetter(c) || c == '_' || c == '-';
     }
 
-    private void add(TokenType type, String text) {
-        tokens.add(new Token(type, text, null,
+    private boolean isIdentPart(char c) {
+        return isIdentStart(c) || Character.isDigit(c);
+    }
+
+    private void add(TokenType type, String lexeme) {
+        tokens.add(new Token(type, lexeme, null,
                 sc.getStartLine(), sc.getStartCol(), sc.getCol() - 1));
     }
 
@@ -135,7 +139,6 @@ public class Lexer {
     }
 
     private RuntimeException error(String msg) {
-        String near = source.substring(sc.getStartIdx(), Math.min(sc.getCur(), source.length()));
-        return new RuntimeException("LEXER > " + msg + " at " + sc.getStartLine() + ":" + sc.getStartCol() + " near '" + near + "'");
+        return new RuntimeException("LEXER > " + msg + " at line " + sc.getStartLine() + ", col " + sc.getStartCol());
     }
 }
