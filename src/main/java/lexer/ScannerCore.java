@@ -14,13 +14,16 @@ public final class ScannerCore {
 
     public ScannerCore(String[] src) {
         this.src = src;
-        //comments(src);
+        comments(src);
     }
 
     public void comments(String[] lines){
-        for (int i = 0; i < src.length; i++) {
-            if(src[i].charAt(0) != '|' && src[i].charAt(src[i].length() - 1) != '|'){
-                komentari.add(i);
+        for (int i = 0; i < lines.length; i++) {
+            if(!lines[i].trim().isEmpty()) {
+                if (lines[i].trim().charAt(lines[i].trim().length() - 1) != '|' || lines[i].trim().charAt(0) != '|') {
+                    //System.out.println("JESTE, linija : " + i + " karakter : " + lines[i].charAt(0) + " karakter : " + lines[i].charAt(lines[i].length() - 2));
+                    komentari.add(i);
+                }
             }
         }
     }
