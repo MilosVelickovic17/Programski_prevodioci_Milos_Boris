@@ -26,11 +26,12 @@ public class Application {
             String[] lines = code.split("\n");
             Lexer lexer = new Lexer(lines);
             List<Token> tokens = lexer.scanTokens();
-
             System.out.println(TokenFormatter.formatList(tokens));
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
             System.exit(1);
         }
     }
+
+
 }

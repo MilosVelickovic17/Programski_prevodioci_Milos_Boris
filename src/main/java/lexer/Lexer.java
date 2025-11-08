@@ -16,10 +16,9 @@ public class Lexer {
             Map.entry("Dunk", TokenType.INT),
             Map.entry("Lay-up", TokenType.FLOAT),
             Map.entry("Jelly", TokenType.DOUBLE),
-            Map.entry("Three", TokenType.CHAR),
             Map.entry("Middie", TokenType.BOOL),
+            Map.entry("Three", TokenType.CHAR),
             Map.entry("Block", TokenType.STRING),
-            Map.entry("Steal", TokenType.ARRAY),
 
             Map.entry("LePrint", TokenType.PRINT),
             Map.entry("LeScan", TokenType.SCAN),
@@ -89,7 +88,7 @@ public class Lexer {
             sc.beginToken();
             scanToken();
         }
-        tokens.add(new Token(TokenType.EOF, "\0", null, null,  sc.getLine(), sc.getCol(), sc.getCol()));
+        tokens.add(new Token(TokenType.EOF, "\0", null,  sc.getLine(), sc.getCol(), sc.getCol()));
         return tokens;
     }
 
@@ -106,9 +105,10 @@ public class Lexer {
             case ',' -> add(TokenType.SEPARATOR_COMMA, ",");
             case ':' -> add(TokenType.TYPE_COLON, ":");
             case '%' -> add(TokenType.PERCENT, "%");
-            case '\n' -> tokens.add(new Token(TokenType.NEWLINE, "\n", null, null,
+            case '\n' -> tokens.add(new Token(TokenType.NEWLINE, "\n", null,
                     sc.getStartLine(), sc.getStartCol(), sc.getStartCol()));
             case ' ', '\r', '\t', '|' -> {}
+            case '!' -> identifier(c);
             default -> {
                 if (isIdentStart(c)) identifier(c);
                 else throw error("Unexpected character");
@@ -125,7 +125,7 @@ public class Lexer {
         if(num == 0){
             zero = true;
         }
-        if(sign == ',') {
+        if(sign == '.') {
             f = true;
             number_builder.append(num.toString());
             number_builder.append('.');
@@ -141,8 +141,8 @@ public class Lexer {
                     }
                     sc.advance();
                     sb.setLength(0);
-                }else if(sc.peek() == ','){
-                    if(!number_builder.isEmpty()) throw error("Error: Second ',' in float number");
+                }else if(sc.peek() == '.'){
+                    if(!number_builder.isEmpty()) throw error("Error: Second '.' in float number");
                     int broj = LITERALS.getOrDefault(sb.toString(), -1);
                     if (broj != -1) {
                         num = num * 10 + broj;
@@ -201,7 +201,7 @@ public class Lexer {
                     break;
                 }
             }
-            else if(sc.peek() == ','){
+            else if(sc.peek() == '.'){
                 String num = sb.toString();
                 TokenType t = NUMBERS.getOrDefault(num, TokenType.IDENT);
                 if(t != TokenType.IDENT){
@@ -210,12 +210,15 @@ public class Lexer {
                     isNum = true;
                     break;
                 }
-                throw error("Error: Character ',' in string of numbers");
+                throw error("Error: Character '.' in string of numbers");
             }
             sb.append(sc.advance());
         }
 
         if(!isNum) {
+            if(first == '!'){
+                throw error("Error: symbol '!' can only be used before number words!");
+            }
             String text = sb.toString();
             TokenType type;
             type = NUMBERS.getOrDefault(text, TokenType.IDENT);
@@ -238,7 +241,7 @@ public class Lexer {
     }
 
     private boolean isIdentStart(char c) {
-        return Character.isLetter(c) || c == '_' || c == '-' || c == ',';
+        return Character.isLetter(c) || c == '_' || c == '-' || c == '.';
     }
 
     private boolean isIdentPart(char c) {
@@ -246,16 +249,16 @@ public class Lexer {
     }
 
     private void add(TokenType type, String lexeme) {
-        tokens.add(new Token(type, lexeme, null, null,
+        tokens.add(new Token(type, lexeme, null,
                 sc.getStartLine(), sc.getStartCol(), sc.getCol() - 1));
     }
 
     private void addLiteralInt(String literal) {
-        tokens.add(new Token(TokenType.INT_LIT, literal, Integer.valueOf(literal), null,
+        tokens.add(new Token(TokenType.INT_LIT, literal, Integer.valueOf(literal),
                 sc.getStartLine(), sc.getStartCol(), sc.getCol() - 1));
     }
     private void addLiteralFloat(String literal) {
-        tokens.add(new Token(TokenType.FlOAT_LIT, literal, null, Float.valueOf(literal),
+        tokens.add(new Token(TokenType.FlOAT_LIT, literal, Float.valueOf(literal),
                 sc.getStartLine(), sc.getStartCol(), sc.getCol() - 1));
     }
 
