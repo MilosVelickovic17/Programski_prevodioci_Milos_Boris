@@ -32,6 +32,4 @@ public class Application {
             System.exit(1);
         }
     }
-
-
 }

@@ -19,12 +19,15 @@ public class Lexer {
             Map.entry("Middie", TokenType.BOOL),
             Map.entry("Three", TokenType.CHAR),
             Map.entry("Block", TokenType.STRING),
+            Map.entry("Brick", TokenType.NEG),
 
             Map.entry("LePrint", TokenType.PRINT),
             Map.entry("LeScan", TokenType.SCAN),
 
             Map.entry("Cleveland", TokenType.MAIN),
             Map.entry("Ohio", TokenType.RETURN),
+            Map.entry("Glaze", TokenType.DEFINE),
+
 
             Map.entry("from", TokenType.ASSIGN),
             Map.entry("blocked-by", TokenType.DIVIDE),
