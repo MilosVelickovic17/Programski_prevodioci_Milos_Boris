@@ -1,5 +1,7 @@
 |Dunk Cleveland|
-|Dunker LeBadID from Zhuri| (* Greška: Nepoznata ključna reč 'Dunker' *)
+(* Greška: Nepoznata ključna reč 'Dunker' *)
+|Dunker LeBadID from Zhuri|
 |Dunk LeScore from James|
-|LeScore passes-to @| (* Greška: Neočekivani karakter '@' *)
+ (* Greška: Neočekivani karakter '@' *)
+|LeScore passes-to @|
 |Ohio Bronny|

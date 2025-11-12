@@ -1,7 +1,9 @@
 |Dunk Cleveland|
 |Dunk LeValue from King_Goat|
-|LeValue from Zhuri.James_Savannah| (* Leksička greška: 'from' se ne može ponovo koristiti kao dodela *)
-|LeGoat(LeValue not-good King| (* Sintaksna greška: Fali ')' za WHILE petlju *)
+(* Leksička greška: 'from' se ne može ponovo koristiti kao dodela *)
+|LeValue from Zhuri.James_Savannah|
+(* Sintaksna greška: Fali ')' za WHILE petlju *)
+|LeGoat(LeValue not-good King|
     |LePrint(LeValue)|
 |}|
 |Ohio Bronny|

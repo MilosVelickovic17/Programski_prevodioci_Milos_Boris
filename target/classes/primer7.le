@@ -1,4 +1,5 @@
-|Dunk LeBadFunc(Dunk LeX, Dunk LeY{| (* Sintaksna greška: Fali 'RPAREN' nakon 'LeY' *)
+(* Sintaksna greška: Fali 'RPAREN' nakon 'LeY' *)
+|Dunk LeBadFunc(Dunk LeX, Dunk LeY{|
 |Ohio LeX|
 |}|
 
