@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import parser.ast.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PrettyPrinter {
@@ -13,6 +12,9 @@ public class PrettyPrinter {
             .setPrettyPrinting()
             .create();
 
+    // ✅ Visitor za izraze
+    private final ExprPrinter exprPrinter = new ExprPrinter();
+
     public String toJson(Program program) {
         return gson.toJson(program);
     }
@@ -20,7 +22,7 @@ public class PrettyPrinter {
     public String printAst(Program program) {
         StringBuilder sb = new StringBuilder();
         sb.append("Program\n");
-        List<Stmt> top = program.topLevel;
+        List<Node> top = program.getChildren();
         for (int i = 0; i < top.size(); i++) {
             printNode(top.get(i), "", sb, i == top.size() - 1);
         }
@@ -35,10 +37,12 @@ public class PrettyPrinter {
 
         // === OPIS CVORA ===
         sb.append(node.getClass().getSimpleName());
+
         if (node instanceof Function f) {
             sb.append(" name=").append(f.name.lexeme);
-            if (f.retType != null && f.retType.type != null)
+            if (f.retType != null && f.retType.type != null) {
                 sb.append(" retType=").append(f.retType.type.base);
+            }
         } else if (node instanceof VarDecl v) {
             sb.append(" type=").append(v.type.base);
         } else if (node instanceof Return r) {
@@ -54,7 +58,7 @@ public class PrettyPrinter {
         sb.append("\n");
 
         // === DECA ===
-        List<? extends Node> children = node.getChildren();
+        List<Node> children = node.getChildren();
         if (children != null && !children.isEmpty()) {
             for (int i = 0; i < children.size(); i++) {
                 boolean last = (i == children.size() - 1);
@@ -66,16 +70,7 @@ public class PrettyPrinter {
 
     private String exprToString(Expr e) {
         if (e == null) return "null";
-        if (e instanceof Literal l) return String.valueOf(l.value);
-        if (e instanceof Variable v) return v.name.lexeme;
-        if (e instanceof Binary b)
-            return "(" + exprToString(b.left) + " " + b.op.lexeme + " " + exprToString(b.right) + ")";
-        if (e instanceof Assign a)
-            return exprToString(a.target) + " = " + exprToString(a.value);
-        if (e instanceof Call c)
-            return exprToString(c.callee) + "()";
-        if (e instanceof Grouping g)
-            return "(" + exprToString(g.expr) + ")";
-        return e.getClass().getSimpleName();
+        // ✅ OVDE se zaista koristi Visitor + accept()
+        return e.accept(exprPrinter);
     }
 }
