@@ -36,7 +36,6 @@ public class If extends Stmt {
         List<Node> list = new ArrayList<>();
         list.add(condition);
         list.add(thenBranch);
-        // else-if branch-e možemo ignorisati u tree prikazu ili ih kasnije ugraditi
         if (elseBranch != null) list.add(elseBranch);
         return list;
     }

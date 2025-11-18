@@ -12,7 +12,6 @@ public class PrettyPrinter {
             .setPrettyPrinting()
             .create();
 
-    // ✅ Visitor za izraze
     private final ExprPrinter exprPrinter = new ExprPrinter();
 
     public String toJson(Program program) {
@@ -35,7 +34,6 @@ public class PrettyPrinter {
         String branch = isLast ? "└── " : "├── ";
         sb.append(prefix).append(branch);
 
-        // === OPIS CVORA ===
         sb.append(node.getClass().getSimpleName());
 
         if (node instanceof Function f) {
@@ -57,7 +55,6 @@ public class PrettyPrinter {
 
         sb.append("\n");
 
-        // === DECA ===
         List<Node> children = node.getChildren();
         if (children != null && !children.isEmpty()) {
             for (int i = 0; i < children.size(); i++) {
@@ -70,7 +67,6 @@ public class PrettyPrinter {
 
     private String exprToString(Expr e) {
         if (e == null) return "null";
-        // ✅ OVDE se zaista koristi Visitor + accept()
         return e.accept(exprPrinter);
     }
 }

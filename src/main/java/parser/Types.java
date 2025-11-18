@@ -3,7 +3,6 @@ package parser;
 public final class Types {
     public enum Base { INT, FLOAT, DOUBLE, CHAR, BOOL, STRING }
 
-    // tip bez/sa nizom (dimenzije možete držati u AST VarDecl.Item kao expr)
     public static final class Type {
         public final Base base;
         public Type(Base b){ this.base=b; }

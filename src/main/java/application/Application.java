@@ -20,25 +20,20 @@ public class Application {
         }
 
         try {
-            // Učitaj iz fajla
             String code = Files.readString(Path.of(args[0]));
             String[] lines = code.split("\n");
 
-            // 1️⃣ Lexer
             Lexer lexer = new Lexer(lines);
             List<Token> tokens = lexer.scanTokens();
             System.out.println(TokenFormatter.formatList(tokens));
 
-            // 2️⃣ Parser
             Parser parser = new Parser(tokens);
             Program program = parser.parseProgram();
 
-            // 3️⃣ AST ispis
             PrettyPrinter printer = new PrettyPrinter();
             System.out.println("\n=== ABSTRACT SYNTAX TREE ===");
             System.out.println(printer.printAst(program));
 
-            // 4️⃣ JSON ispis
             System.out.println("\n=== JSON AST ===");
             System.out.println(printer.toJson(program));
 

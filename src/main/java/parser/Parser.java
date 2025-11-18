@@ -15,9 +15,6 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    // ======================================================
-    //                   MAIN PARSE ENTRY
-    // ======================================================
     public Program parseProgram() {
         List<Stmt> tops = new ArrayList<>();
         skipNewlines();
@@ -27,7 +24,6 @@ public class Parser {
             skipNewlines();
         }
 
-        // prog kraj
         while (!isAtEnd() && peek().type == TokenType.NEWLINE) advance();
 
         if (!isAtEnd() && peek().type == TokenType.EOF) {
@@ -39,9 +35,6 @@ public class Parser {
         throw error(peek(), "Expected end of file, got: " + peek().type);
     }
 
-    // ======================================================
-    //                TOP LEVEL ELEMENTS
-    // ======================================================
     private Stmt topElement() {
         if (check(TokenType.INT) && checkNext(TokenType.MAIN)) {
             return mainFunction();
@@ -73,9 +66,6 @@ public class Parser {
                 tt == TokenType.CHAR || tt == TokenType.STRING || tt == TokenType.BOOL;
     }
 
-    // ======================================================
-    //                    MAIN FUNCTION
-    // ======================================================
     private Stmt mainFunction() {
         consume(TokenType.INT, "Expected INT before MAIN");
         Token mainTok = consume(TokenType.MAIN, "Expected MAIN keyword");
@@ -105,9 +95,6 @@ public class Parser {
         return out;
     }
 
-    // ======================================================
-    //                     FUNCTIONS
-    // ======================================================
     private Stmt voidFunction() {
         Token name = consume(TokenType.IDENT, "Expected function name");
         consume(TokenType.LPAREN, "Expected '(' after function name");
@@ -177,9 +164,6 @@ public class Parser {
         return new Return(r, val);
     }
 
-    // ======================================================
-    //                     STATEMENTS
-    // ======================================================
     private Stmt statement() {
         if (match(TokenType.PRINT)) return printStmt(previous());
         if (match(TokenType.SCAN)) return scanStmt(previous());
@@ -272,9 +256,6 @@ public class Parser {
         return new ExprStmt(e);
     }
 
-    // ======================================================
-    //                 EXPRESSIONS & CONDITIONS
-    // ======================================================
     private Expr condition() {
         Expr left = expression();
         Token op = relOp();
@@ -403,9 +384,6 @@ public class Parser {
         return new Types.Type(base);
     }
 
-    // ======================================================
-    //                     HELPERS
-    // ======================================================
     private void skipNewlines() {
         while (match(TokenType.NEWLINE)) {}
     }

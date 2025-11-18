@@ -13,9 +13,6 @@ public abstract class Node {
         this.id = COUNTER.incrementAndGet();
     }
 
-    /**
-     * Podrazumevano nema dece – vraćamo praznu listu da izbegnemo null.
-     */
     public List<Node> getChildren() {
         return Collections.emptyList();
     }
